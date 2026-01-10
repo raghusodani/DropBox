@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@reference "tailwindcss";
+
+:root {
+  --primary: #0061ff;
+  --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 font-sans;
+  background-image: var(--bg-gradient);
+  min-height: 100vh;
+}
+
+.glass-panel {
+  @apply bg-white/70 backdrop-blur-md border border-white/30 shadow-xl rounded-2xl;
+}
+
+.btn-primary {
+  @apply bg-blue-600 text-white px-6 py-2 rounded-lg font-medium transition-all hover:bg-blue-700 active:scale-95 shadow-md;
+}
+
+.btn-secondary {
+  @apply bg-white text-gray-700 px-6 py-2 rounded-lg font-medium border border-gray-200 transition-all hover:bg-gray-50 active:scale-95 shadow-sm;
+}
