@@ -1,5 +1,7 @@
 # Typeface Dropbox Clone
 
+![UI Screenshot](file:///Users/apurvasodani/Desktop/workplace/Projects/Dropbox-Clone/assets/ui_screenshot.png)
+
 A modern, simplified Dropbox clone featuring a React frontend and a Node.js/Express backend. Users can upload, list, download, and preview files in a sleek, glassmorphism-inspired interface.
 
 ## 🚀 Quick Start
