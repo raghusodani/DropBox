@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # Backend Server
+  server:
+    build: ./server
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - DB_TYPE=postgres # Switch to 'sqlite' if needed
+      - PGUSER=user
+      - PGHOST=db
+      - PGDATABASE=dropbox_clone
+      - PGPASSWORD=password
+      - PGPORT=5432
+    volumes:
+      - ./server/uploads:/app/uploads
+    depends_on:
+      - db
+    restart: always
+
+  # Frontend Client
+  client:
+    build: ./client
+    ports:
+      - "5173:80"
+    depends_on:
+      - server
+    restart: always
+
+  # Preferred way for DBMS: Using a dedicated Docker container
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dropbox_clone
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+
+volumes:
+  postgres_data:

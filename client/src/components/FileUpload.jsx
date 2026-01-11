@@ -95,21 +95,30 @@ const FileUpload = () => {
                 )}
             </AnimatePresence>
 
-            <button
-                disabled={!file || uploading}
-                onClick={handleUpload}
-                className={`w-full mt-6 flex items-center justify-center gap-2 ${uploading ? 'bg-blue-400 cursor-not-allowed' : 'btn-primary'
-                    }`}
-            >
-                {uploading ? (
-                    <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        Uploading...
-                    </>
-                ) : (
-                    'Upload to Dropbox'
-                )}
-            </button>
+            <div className="flex flex-col gap-3 mt-6">
+                <button
+                    onClick={() => document.getElementById('fileInput').click()}
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200"
+                >
+                    <Upload className="w-4 h-4" /> Add Files
+                </button>
+
+                <button
+                    disabled={!file || uploading}
+                    onClick={handleUpload}
+                    className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all ${uploading ? 'bg-blue-400 cursor-not-allowed' : 'btn-primary'
+                        }`}
+                >
+                    {uploading ? (
+                        <>
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            Uploading...
+                        </>
+                    ) : (
+                        'Upload to Dropbox'
+                    )}
+                </button>
+            </div>
         </div>
     );
 };
