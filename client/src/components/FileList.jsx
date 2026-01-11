@@ -1,9 +1,12 @@
 import { motion } from 'framer-motion';
 import { Download, Eye, FileCode, FileText, HardDrive, Image as ImageIcon } from 'lucide-react';
+import { useSelector } from 'react-redux';
 
 const API_BASE_URL = 'http://localhost:5001/api';
 
-const FileList = ({ files, onPreview }) => {
+const FileList = ({ onPreview }) => {
+    const { items: files } = useSelector((state) => state.files);
+
     const getIcon = (mimeType) => {
         if (mimeType?.includes('image')) return <ImageIcon className="text-pink-500" />;
         if (mimeType?.includes('json')) return <FileCode className="text-orange-500" />;
@@ -18,7 +21,7 @@ const FileList = ({ files, onPreview }) => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
-    if (files.length === 0) {
+    if (!files || files.length === 0) {
         return (
             <div className="glass-panel p-12 text-center">
                 <HardDrive className="w-16 h-16 text-gray-300 mx-auto mb-4" />

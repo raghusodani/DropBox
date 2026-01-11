@@ -1,53 +1,44 @@
-import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, CheckCircle, Upload, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearUploadStatus, uploadFile } from '../store/fileSlice';
 
-const API_BASE_URL = 'http://localhost:5001/api';
-
-const FileUpload = ({ onUploadSuccess }) => {
+const FileUpload = () => {
+    const dispatch = useDispatch();
+    const { uploading, uploadStatus, error } = useSelector((state) => state.files);
     const [file, setFile] = useState(null);
-    const [uploading, setUploading] = useState(false);
-    const [status, setStatus] = useState(null); // 'success', 'error'
-    const [errorMsg, setErrorMsg] = useState('');
 
     const allowedTypes = ['text/plain', 'image/jpeg', 'image/png', 'application/json'];
+
+    useEffect(() => {
+        if (uploadStatus === 'success') {
+            setFile(null);
+            const timer = setTimeout(() => {
+                dispatch(clearUploadStatus());
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [uploadStatus, dispatch]);
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         if (selectedFile) {
             if (allowedTypes.includes(selectedFile.type)) {
                 setFile(selectedFile);
-                setStatus(null);
-                setErrorMsg('');
+                dispatch(clearUploadStatus());
             } else {
-                setStatus('error');
-                setErrorMsg('Invalid file type. Only txt, jpg, png, and json are allowed.');
+                // We can handle local error if we want, but letting the slice handle it via rejectWithValue is also fine.
+                // For now, let's keep it simple.
                 setFile(null);
+                alert('Invalid file type. Only txt, jpg, png, and json are allowed.');
             }
         }
     };
 
-    const handleUpload = async () => {
+    const handleUpload = () => {
         if (!file) return;
-
-        setUploading(true);
-        setStatus(null);
-
-        const formData = new FormData();
-        formData.append('file', file);
-
-        try {
-            await axios.post(`${API_BASE_URL}/upload`, formData);
-            setStatus('success');
-            setFile(null);
-            onUploadSuccess();
-        } catch (error) {
-            setStatus('error');
-            setErrorMsg(error.response?.data?.error || 'Upload failed');
-        } finally {
-            setUploading(false);
-        }
+        dispatch(uploadFile(file));
     };
 
     return (
@@ -90,16 +81,16 @@ const FileUpload = ({ onUploadSuccess }) => {
             </div>
 
             <AnimatePresence>
-                {status && (
+                {(uploadStatus || error) && (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
-                        className={`mt-4 p-3 rounded-lg flex items-center gap-2 ${status === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                        className={`mt-4 p-3 rounded-lg flex items-center gap-2 ${uploadStatus === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                             }`}
                     >
-                        {status === 'success' ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
-                        <span className="text-sm font-medium">{status === 'success' ? 'Uploaded successfully!' : errorMsg}</span>
+                        {uploadStatus === 'success' ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                        <span className="text-sm font-medium">{uploadStatus === 'success' ? 'Uploaded successfully!' : error}</span>
                     </motion.div>
                 )}
             </AnimatePresence>

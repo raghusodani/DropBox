@@ -1,35 +1,21 @@
-import axios from 'axios';
 import { Layout } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import FileList from './components/FileList';
 import FilePreview from './components/FilePreview';
 import FileUpload from './components/FileUpload';
+import { fetchFiles } from './store/fileSlice';
 
 const API_BASE_URL = 'http://localhost:5001/api';
 
 function App() {
-  const [files, setFiles] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { items: files, loading } = useSelector((state) => state.files);
   const [selectedFile, setSelectedFile] = useState(null);
 
-  const fetchFiles = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/files`);
-      setFiles(response.data);
-    } catch (error) {
-      console.error('Error fetching files:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchFiles();
-  }, []);
-
-  const handleUploadSuccess = () => {
-    fetchFiles();
-  };
+    dispatch(fetchFiles());
+  }, [dispatch]);
 
   const handlePreview = (file) => {
     setSelectedFile(file);
@@ -49,7 +35,7 @@ function App() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
-          <FileUpload onUploadSuccess={handleUploadSuccess} />
+          <FileUpload />
         </div>
 
         <div className="lg:col-span-2">
@@ -58,7 +44,7 @@ function App() {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             </div>
           ) : (
-            <FileList files={files} onPreview={handlePreview} onDownloadSuccess={fetchFiles} />
+            <FileList onPreview={handlePreview} />
           )}
         </div>
       </div>
